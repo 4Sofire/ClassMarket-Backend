@@ -97,3 +97,27 @@ app.post('/checkout', async (req, res) => {
     res.status(400).json({ error: err.message || 'Bad Order Could Not be completed' });
   }
 });
+
+app.put('/api/courses/:id', async (req, res) => {
+  try {
+    const result = await db.collection('courses').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: req.body }
+    );
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+    
+    res.json({ success: true, message: 'Course updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Start server after DB connection
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`✓ Server running on port ${PORT}`);
+  });
+});
