@@ -4,8 +4,8 @@ const { MongoClient, ObjectId } = require('mongodb');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://ob384:AewneOTcxz3dx1yC@after-mdx.w9ple.mongodb.net/';
-const DB_NAME = 'aftermdx';
+const MONGO_URI = 'mongodb+srv://sb3038_db_user:HiRrInOWu4P7BMn5@cluster0.1yfpoz5.mongodb.net/';
+const DB_NAME = 'classmarket';
 
 app.use(cors());
 app.use(express.json());
@@ -121,3 +121,4 @@ connectDB().then(() => {
     console.log(`✓ Server running on port ${PORT}`);
   });
 });
+
