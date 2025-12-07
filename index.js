@@ -60,6 +60,9 @@ app.post('/checkout', async (req, res) => {
     const orderObject = req.body;
     orderObject.time = new Date();
     orderObject.orderDetails = JSON.parse(orderObject.orderDetails);
+
+    console.log("The order body")
+    console.log(orderObject)
     
     const coursesCol = db.collection('courses');
     const ordersCol = db.collection('orders');
@@ -121,4 +124,5 @@ connectDB().then(() => {
     console.log(`✓ Server running on port ${PORT}`);
   });
 });
+
 
