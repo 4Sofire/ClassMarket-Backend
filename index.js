@@ -28,3 +28,29 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
+
+app.get('/api/courses/', async (req, res) => {
+  try {
+    const courses = await db.collection('courses').find({}).toArray();
+    res.json(courses);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/courses/:courseID', async (req, res) => {
+  try {
+    const course = await db.collection('courses').findOne(
+      { _id: new ObjectId(req.params.courseID) },
+      { projection: { _id: 0 } }
+    );
+    
+    if (!course) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+    
+    res.json(course);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
