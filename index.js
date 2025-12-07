@@ -54,3 +54,46 @@ app.get('/api/courses/:courseID', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+app.post('/checkout', async (req, res) => {
+  try {
+    const orderObject = req.body;
+    orderObject.time = new Date();
+    orderObject.orderDetails = JSON.parse(orderObject.orderDetails);
+    
+    const coursesCol = db.collection('courses');
+    const ordersCol = db.collection('orders');
+    
+    // Update available spaces for each course in the order
+    for (const order of orderObject.orderDetails) {
+      const { course, space } = order;
+      
+      const courseData = await coursesCol.findOne({ name: course });
+      
+      if (!courseData) {
+        throw new Error(`Course "${course}" not found`);
+      }
+      
+      if (courseData.availableSpaces < space) {
+        throw new Error(`Not enough spaces available for "${course}"`);
+      }
+      
+      // Decrease available spaces
+      await coursesCol.updateOne(
+        { name: course },
+        { $inc: { availableSpaces: -space } }
+      );
+      
+      console.log(`Updated ${course}: Available spaces decremented by ${space}`);
+    }
+    
+    // Store the order
+    const result = await ordersCol.insertOne(orderObject);
+    console.log(`Insertion ${result.insertedId}: Complete`);
+    
+    res.status(201).json({ success: true, message: 'Order Completed' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(400).json({ error: err.message || 'Bad Order Could Not be completed' });
+  }
+});
